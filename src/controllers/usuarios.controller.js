@@ -62,43 +62,6 @@ class UsuariosController {
       });
     }
   }
-
-  async updateUsuario(req, res) {
-    try {
-      const { email, name, lastname, password } = req.body;
-      let updatedUser = await UsuariosService.updateUser(email, { name, lastname, password });
-  
-      return res.status(200).json({
-        message: "Updated!",
-        usuario: updatedUser,
-      });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        method: "updateUsuario",
-        message: err.message,
-      });
-    }
-  }
-  
-
-  async deleteUsuario(req, res) {
-    try {
-      const { email } = req.body;
-      let deletedUser = await UsuariosService.deleteUser(email);
-  
-      return res.status(200).json({
-        message: "Deleted!",
-        usuario: deletedUser,
-      });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        method: "deleteUsuario",
-        message: err.message,
-      });
-    }
-  }
   
 
   async login(req, res) {
@@ -132,6 +95,84 @@ class UsuariosController {
       });
     }
   }
+
+  async updateUsuario(req, res) {
+    try {
+      let user = await UsuariosService.getUserById(req.params.id);
+      if (!user) {
+        return res.status(404).json({ method: "updateUsuario", message: "Not Found" });
+      }
+  
+      const updatedUser = await UsuariosService.updateUsuario(
+        req.params.id,
+        req.body,
+        user
+      );
+  
+      return res.status(200).json(updatedUser);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        method: "updateUsuario",
+        message: err.message,
+      });
+    }
+  }
+
+  async deleteUsuario(req, res) {
+    try {
+      let isUser = await UsuariosService.getUserById(req.params.id);
+      if (isUser) {
+        await UsuariosService.deleteUsuario(req.params.id);
+        return res.status(204).json({ message: "No Content" });
+      }
+      return res.status(404).json({ message: "Not Found" });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        method: "deleteUsuario",
+        message: err,
+      });
+    }
+  }
+  
 }
 
 module.exports = UsuariosController.getInstance();
+
+
+// async updateUsuario(req, res) {
+//   try {
+//     const { email, name, lastname, password } = req.body;
+//     let updatedUser = await UsuariosService.updateUser(email, { name, lastname, password });
+
+//     return res.status(200).json({
+//       message: "Updated!",
+//       usuario: updatedUser,
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({
+//       method: "updateUsuario",
+//       message: err.message,
+//     });
+//   }
+// }
+
+// async deleteUsuario(req, res) {
+//   try {
+//     const { email } = req.body;
+//     let deletedUser = await UsuariosService.deleteUser(email);
+
+//     return res.status(200).json({
+//       message: "Deleted!",
+//       usuario: deletedUser,
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({
+//       method: "deleteUsuario",
+//       message: err.message,
+//     });
+//   }
+// }

@@ -7,6 +7,8 @@ const router = Router();
 
 router.get("/", usuariosController.getUsuarios); //GET USUARIOS
 
+router.get("/:id", usuariosController.getUsuarioById); //GET USUARIOS BY ID
+
 router.post(
   "/",
   [
@@ -19,29 +21,6 @@ router.post(
   usuariosController.createUsuario
 ); //POST USUARIOS
 
-router.delete(
-  "/delete",
-  [
-    check("email").not().isEmpty(),
-    checkFields,
-  ],
-  usuariosController.deleteUsuario
-); // DELETE USUARIOS
-
-router.put(
-  "/update",
-  [
-    check("email").not().isEmpty(),
-    check("name").not().isEmpty(),
-    check("lastname").not().isEmpty(),
-    check("password").not().isEmpty(),
-    checkFields,
-  ],
-  usuariosController.updateUsuario
-); // UPDATE USUARIO
-
-router.get("/:id", usuariosController.getUsuarioById); //GET USUARIOS BY ID
-
 router.post(
   "/login",
   [
@@ -50,6 +29,22 @@ router.post(
     checkFields,
   ],
   usuariosController.login
-);
+); // POST LOGIN
+
+router.put(
+  "/:id",
+  [
+    checkFields,
+  ],
+  usuariosController.updateUsuario
+); // PUT USUARIOS
+
+router.delete(
+  "/:id",
+  [
+    checkFields,
+  ],
+  usuariosController.deleteUsuario
+); // DELETE USUARIOS
 
 module.exports = router;

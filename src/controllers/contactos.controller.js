@@ -48,11 +48,18 @@ class ContactosController {
 
   async createContacto(req, res) {
     try {
-      let newContacto = await ContactosService.createContacto(req.body);
-
-      return res.status(201).json({
-        message: "Created!",
-        contacto: newContacto,
+      const { contact } = req.body;
+      let isRegistered = await ContactosService.isContactoRegistered(contact.email);
+      if (!isRegistered) {
+        let newContacto = await ContactosService.createContacto(contact);
+  
+        return res.status(201).json({
+          message: "Created!",
+          contacto: newContacto,
+        });
+      }
+      return res.status(400).json({
+        message: "The contact is already registered",
       });
     } catch (err) {
       console.error(err);
@@ -60,162 +67,109 @@ class ContactosController {
         method: "createContacto",
         message: err.message,
       });
+      }
+    }
+  
+  async updateContacto(req, res) {
+    try {
+      let contact = await ContactosService.getContactoById(req.params.id);
+      if (!contact) {
+        return res.status(404).json({
+          method: "updateContacto",
+          message: "Not Found",
+        });
+      }
+      const modifiedContacto = await ContactosService.updateContacto(
+        req.params.id,
+        req.body,
+        contact
+      );
+      return res.status(200).json(modifiedContacto);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        method: "updateContacto",
+        message: err,
+      });
     }
   }
 
   async deleteContacto(req, res) {
     try {
-      const { email } = req.body;
-      let deletedContacto = await ContactosService.deleteContacto(email);
-  
-      return res.status(200).json({
-        message: "Deleted!",
-        contacto: deletedContacto,
-      });
+      let isContact = await ContactosService.getContactoById(req.params.id);
+      if (isContact) {
+        await ContactosService.deleteContacto(req.params.id);
+        return res.status(204).json({ message: "No Content" });
+      }
+      return res.status(404).json({ message: "Not Found" });
     } catch (err) {
       console.error(err);
       return res.status(500).json({
         method: "deleteContacto",
-        message: err.message,
+        message: err,
       });
-    }
+    }    
   }
   
-  async updateContacto(req, res) {
-    try {
-      const { email, fullname, telephone, message } = req.body;
-      let updatedContacto = await ContactosService.updateContacto(email, {
-        fullname,
-        telephone,
-        message,
-      });
   
-      return res.status(200).json({
-        message: "Updated!",
-        contacto: updatedContacto,
-      });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        method: "updateContacto",
-        message: err.message,
-      });
-    }
-  }
+
+  // async createContacto(req, res) {
+  //   try {
+  //     let newContacto = await ContactosService.createContacto(req.body);
+
+  //     return res.status(201).json({
+  //       message: "Created!",
+  //       contacto: newContacto,
+  //     });
+  //   } catch (err) {
+  //     console.error(err);
+  //     return res.status(500).json({
+  //       method: "createContacto",
+  //       message: err.message,
+  //     });
+  //   }
+  // }
+
+  // async updateContacto(req, res) {
+  //   try {
+  //     const { email, fullname, telephone, message } = req.body;
+  //     let updatedContacto = await ContactosService.updateContacto(email, {
+  //       fullname,
+  //       telephone,
+  //       message,
+  //     });
+  
+  //     return res.status(200).json({
+  //       message: "Updated!",
+  //       contacto: updatedContacto,
+  //     });
+  //   } catch (err) {
+  //     console.error(err);
+  //     return res.status(500).json({
+  //       method: "updateContacto",
+  //       message: err.message,
+  //     });
+  //   }
+  // }
+  
+  // async deleteContacto(req, res) {
+  //   try {
+  //     const { email } = req.body;
+  //     let deletedContacto = await ContactosService.deleteContacto(email);
+  
+  //     return res.status(200).json({
+  //       message: "Deleted!",
+  //       contacto: deletedContacto,
+  //     });
+  //   } catch (err) {
+  //     console.error(err);
+  //     return res.status(500).json({
+  //       method: "deleteContacto",
+  //       message: err.message,
+  //     });
+  //   }
+  // }
   
 }
 
 module.exports = ContactosController.getInstance();
-
-
-// const ContactosService = require("../services/contactos.service");
-// const AuthService = require('../services/auth.service');
-// const jwt = require("jsonwebtoken");
-
-// class ContactosController {
-//   static getInstance() {
-//     if (!instance) {
-//       return new ContactosController();
-//     }
-//     return instance;
-//   }
-
-//   async getContactos(req, res) {
-//     try {
-//       const contactos = await ContactosService.getContactos();
-//       return res.status(200).json(contactos);
-//     } catch (err) {
-//       console.error(err);
-//       return res.status(500).json({
-//         method: "getContactos",
-//         message: err,
-//       });
-//     }
-//   }
-
-//   async getContactoById(req, res) {
-//     try {
-//       const id = req.params.id;
-//       let contacto = await ContactosService.getContactoById(id);
-//       if (!contacto) {
-//         return res.status(404).json({
-//           method: "getContactoById",
-//           message: "Not Found",
-//         });
-//       }
-//       return res.status(200).json(contacto);
-//     } catch (err) {
-//       console.error(err);
-//       return res.status(500).json({
-//         method: "getContactoById",
-//         message: err,
-//       });
-//     }
-//   }
-
-//   async createContacto(req, res) {
-//     try {
-//       const { fullname, email, telephone, message } = req.body;
-  
-//       if (email != null) {
-//         const contact = await ContactosService.getContactoByEmail(email);
-  
-//         const token = jwt.sign(contact.toJSON(), process.env.PRIVATE_KEY, {
-//           expiresIn: "1d",
-//         });
-  
-//         const newContacto = await ContactosService.createContacto({
-//           fullname,
-//           email,
-//           telephone,
-//           message,
-//         });
-  
-//         return res.status(201).json({
-//           message: "Created!",
-//           contacto: newContacto,
-//           token,
-//         });
-//       }
-//     } catch (err) {
-//       console.error(err);
-//       return res.status(500).json({
-//         method: "createContacto",
-//         message: err.message,
-//       });
-//     }
-//   }
-  
-
-//   async submit(req, res) {
-//     try {
-//       const { fullname, email, telephone, message } = req.body;
-
-//       if (email != null) {
-//         const contacto = await ContactosService.getContactoByEmail(email);
-
-//         const token = jwt.sign(contacto.toJSON(), process.env.PRIVATE_KEY, {
-//           expiresIn: "1d",
-//         });
-
-//         return res.status(200).json({
-//           status: 200,
-//           token,
-//           message: "Token created successfully.",
-//         });
-//       } else {
-//         return res.status(401).json({
-//           message: "Unauthorized.",
-//         });
-//       }
-//     } catch (err) {
-//       console.error(err);
-//       return res.status(500).json({
-//         method: "submit",
-//         message: err.message,
-//       });
-//     }
-//   }
-// }
-
-// module.exports = ContactosController.getInstance();

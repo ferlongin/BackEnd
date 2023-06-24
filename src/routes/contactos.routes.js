@@ -1,78 +1,53 @@
 const { Router } = require("express");
-const { check } = require("express-validator");
 const contactosController = require("../controllers/contactos.controller");
-const checkFields = require("../middlewares/validateFields");
+const jwtValidator = require('../middlewares/jwtValidator');
+const checkFields = require('../middlewares/validateFields');
+const { check } = require("express-validator");
 
 const router = Router();
 
-router.get("/", contactosController.getContactos); // GET CONTACTOS
+router.get("/", 
+[
+  check('jwt').not().isEmpty(),
+  checkFields
+],
+jwtValidator, contactosController.getContactos); // GET CONTACTOS
 
-router.post(
-  "/",
-  [
-    check("fullname").not().isEmpty(),
-    check("email").not().isEmpty(),
-    check("telephone").not().isEmpty(),
-    check("message").not().isEmpty(),
-    checkFields,
-  ],
-  contactosController.createContacto
+
+router.get('/:id',[
+  check('jwt').not().isEmpty(),
+  checkFields
+],
+jwtValidator, contactosController.getContactoById); //GET PRODUCTOS BY ID
+
+
+router.post("/",
+[
+  check('jwt').not().isEmpty(),
+  check("contact.fullname").not().isEmpty(),
+  check("contact.email").not().isEmpty(),
+  check("contact.telephone").not().isEmpty(),
+  check("contact.message").not().isEmpty(),
+  checkFields,
+],
+jwtValidator, contactosController.createContacto
 ); // POST CONTACTOS
 
-router.delete(
-  "/delete",
+
+router.put("/:id",
   [
-    check("email").not().isEmpty(),
-    checkFields,
+    check('jwt').not().isEmpty(),
+    checkFields
   ],
-  contactosController.deleteContacto
+  jwtValidator, contactosController.updateContacto
+); // PUT CONTACTO
+
+
+router.delete('/:id',[
+  check('jwt').not().isEmpty(),
+  checkFields
+  ],
+  jwtValidator, contactosController.deleteContacto
 ); // DELETE CONTACTO
 
-router.put(
-  "/update",
-  [
-    check("email").not().isEmpty(),
-    check("fullname").not().isEmpty(),
-    check("telephone").not().isEmpty(),
-    check("message").not().isEmpty(),
-    checkFields,
-  ],
-  contactosController.updateContacto
-); // UPDATE CONTACTO
-
 module.exports = router;
-
-// const { Router } = require("express");
-// const { check } = require("express-validator");
-// const contactosController = require("../controllers/contactos.controller");
-// const checkFields = require("../middlewares/validateFields");
-
-// const router = Router();
-
-// router.get("/", contactosController.getcontactos); //GET CONTACTOS
-// router.post(
-//   "/",
-//   [
-//     check("fullname").not().isEmpty(),
-//     check("email").not().isEmpty(),
-//     check("telephone").not().isEmpty(),
-//     check("message").not().isEmpty(),
-//     checkFields,
-//   ],
-//   contactosController.createContacto
-// ); //POST CONTACTOS
-
-// router.get("/:id", contactosController.getContactoById); //GET CONTACTOS BY ID
-// router.post(
-//   "/submit", // THIS SHOULD BE THE BUTTON IN WHICH WE SEND THE REQUEST TO CONTACT THE USER
-//   [
-//     check("fullname").not().isEmpty(),
-//     check("email").not().isEmpty(),
-//     check("telephone").not().isEmpty(),
-//     check("message").not().isEmpty(),
-//     checkFields,
-//   ],
-//   contactosController.submit
-// );
-
-// module.exports = router;
