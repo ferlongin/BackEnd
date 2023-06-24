@@ -63,6 +63,44 @@ class UsuariosController {
     }
   }
 
+  async updateUsuario(req, res) {
+    try {
+      const { email, name, lastname, password } = req.body;
+      let updatedUser = await UsuariosService.updateUser(email, { name, lastname, password });
+  
+      return res.status(200).json({
+        message: "Updated!",
+        usuario: updatedUser,
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        method: "updateUsuario",
+        message: err.message,
+      });
+    }
+  }
+  
+
+  async deleteUsuario(req, res) {
+    try {
+      const { email } = req.body;
+      let deletedUser = await UsuariosService.deleteUser(email);
+  
+      return res.status(200).json({
+        message: "Deleted!",
+        usuario: deletedUser,
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        method: "deleteUsuario",
+        message: err.message,
+      });
+    }
+  }
+  
+
   async login(req, res) {
     try {
       const { email, password } = req.body;

@@ -50,7 +50,7 @@ class UsuariosService {
 
     async updateUser(id, userData) {
         try {
-            let updatedUser = await UsuariosModel.findByIdAndUpdate(id, userData, { new: true });
+            let updatedUser = await UsuariosModel.findOneAndUpdate({ email: user.email });
             if (!updatedUser) {
                 throw new Error("User not found");
             }
@@ -61,18 +61,37 @@ class UsuariosService {
         }
     }
 
-    async deleteUser(id) {
+    async updateUser(email, userData) {
         try {
-            let deletedUser = await UsuariosModel.findByIdAndRemove(id);
-            if (!deletedUser) {
-                throw new Error("User not found");
-            }
-            return deletedUser;
+          let updatedUser = await UsuariosModel.findOneAndUpdate(
+            { email },
+            userData,
+            { new: true }
+          );
+          if (!updatedUser) {
+            throw new Error("User not found");
+          }
+          return updatedUser;
         } catch (err) {
-            console.error(err);
-            throw new Error("Error in deleteUser Service");
+          console.error(err);
+          throw new Error("Error in updateUser Service");
         }
-    }
+      }
+      
+
+    async deleteUser(email) {
+        try {
+          let deletedUser = await UsuariosModel.findOneAndDelete({ email });
+          if (!deletedUser) {
+            throw new Error("User not found");
+          }
+          return deletedUser;
+        } catch (err) {
+          console.error(err);
+          throw new Error("Error in deleteUser Service");
+        }
+      }
+      
 }
 
 module.exports = new UsuariosService();
