@@ -62,6 +62,47 @@ class ContactosController {
       });
     }
   }
+
+  async deleteContacto(req, res) {
+    try {
+      const { email } = req.body;
+      let deletedContacto = await ContactosService.deleteContacto(email);
+  
+      return res.status(200).json({
+        message: "Deleted!",
+        contacto: deletedContacto,
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        method: "deleteContacto",
+        message: err.message,
+      });
+    }
+  }
+  
+  async updateContacto(req, res) {
+    try {
+      const { email, fullname, telephone, message } = req.body;
+      let updatedContacto = await ContactosService.updateContacto(email, {
+        fullname,
+        telephone,
+        message,
+      });
+  
+      return res.status(200).json({
+        message: "Updated!",
+        contacto: updatedContacto,
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        method: "updateContacto",
+        message: err.message,
+      });
+    }
+  }
+  
 }
 
 module.exports = ContactosController.getInstance();

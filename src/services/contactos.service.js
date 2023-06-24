@@ -47,31 +47,36 @@ class ContactosService {
         }
     }
 
-    async updateContacto(id, contactoData) {
+    async deleteContacto(email) {
         try {
-            let updatedContacto = await ContactosModel.findByIdAndUpdate(id, contactoData, { new: true });
-            if (!updatedContacto) {
-                throw new Error("Contacto not found");
-            }
-            return updatedContacto;
+          let deletedContacto = await ContactosModel.findOneAndDelete({ email });
+          if (!deletedContacto) {
+            throw new Error("Contacto not found");
+          }
+          return deletedContacto;
         } catch (err) {
-            console.error(err);
-            throw new Error("Error in updateContacto Service");
+          console.error(err);
+          throw new Error("Error in deleteContacto Service");
         }
-    }
-
-    async deleteContacto(id) {
+      }
+      
+      async updateContacto(email, contactoData) {
         try {
-            let deletedContacto = await ContactosModel.findByIdAndRemove(id);
-            if (!deletedContacto) {
-                throw new Error("Contacto not found");
-            }
-            return deletedContacto;
+          let updatedContacto = await ContactosModel.findOneAndUpdate(
+            { email },
+            contactoData,
+            { new: true }
+          );
+          if (!updatedContacto) {
+            throw new Error("Contacto not found");
+          }
+          return updatedContacto;
         } catch (err) {
-            console.error(err);
-            throw new Error("Error in deleteContacto Service");
+          console.error(err);
+          throw new Error("Error in updateContacto Service");
         }
-    }
+      }
+      
 }
 
 module.exports = new ContactosService();

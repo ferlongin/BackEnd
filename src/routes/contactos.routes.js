@@ -19,6 +19,27 @@ router.post(
   contactosController.createContacto
 ); // POST CONTACTOS
 
+router.delete(
+  "/delete",
+  [
+    check("email").not().isEmpty(),
+    checkFields,
+  ],
+  contactosController.deleteContacto
+); // DELETE CONTACTO
+
+router.put(
+  "/update",
+  [
+    check("email").not().isEmpty(),
+    check("fullname").not().isEmpty(),
+    check("telephone").not().isEmpty(),
+    check("message").not().isEmpty(),
+    checkFields,
+  ],
+  contactosController.updateContacto
+); // UPDATE CONTACTO
+
 module.exports = router;
 
 // const { Router } = require("express");
