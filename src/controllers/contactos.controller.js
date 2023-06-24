@@ -49,7 +49,7 @@ class ContactosController {
   async createContacto(req, res) {
     try {
       const { contact } = req.body;
-      let isRegistered = await ContactosService.isContactoRegistered(contact.email);
+      let isRegistered = await ContactosService.isContactRegistered(contact.email);
       if (!isRegistered) {
         let newContacto = await ContactosService.createContacto(contact);
   
@@ -67,8 +67,9 @@ class ContactosController {
         method: "createContacto",
         message: err.message,
       });
-      }
     }
+  }
+  
   
   async updateContacto(req, res) {
     try {
