@@ -1,4 +1,6 @@
 require('dotenv').config();
+const cors = require('cors');
+
 const express = require('express');
 const { dbConnection } = require('./src/db/config');
 const bcrypt = require('bcrypt'); // Importar bcrypt
@@ -8,6 +10,7 @@ dbConnection();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors())
 
 app.get("/", (req, res) => {
   res.status(200).send({ message: "You are connected to the project" });
