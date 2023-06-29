@@ -55,18 +55,18 @@ class ContactosService {
       }
     }
     
-    async updateProduct(id, fields, product) {
+    async updateContacto(id, fields, contact) {
       try {
-        fields.descripcion ? product.descripcion = fields.descripcion : false;
-        fields.categoria ? product.categoria = fields.categoria : false;
-        fields.precio_unitario ? product.precio_unitario = fields.precio_unitario : false;
-        fields.url_img ? product.url_img = fields.url_img : false;
+        fields.descripcion ? contact.descripcion = fields.descripcion : false;
+        fields.categoria ? contact.categoria = fields.categoria : false;
+        fields.precio_unitario ? contact.precio_unitario = fields.precio_unitario : false;
+        fields.url_img ? contact.url_img = fields.url_img : false;
   
-        await ProductosModel.findOneAndUpdate({_id:id}, product);
-        return product;
+        await ContactosModel.findOneAndUpdate({_id:id}, contact);
+        return contact;
       } catch (err) {
         console.error(err);
-        throw new Error("Error in updateProduct Service");
+        throw new Error("Error in updateContacto Service");
       }
     }
 
