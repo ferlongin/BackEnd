@@ -57,10 +57,10 @@ class ContactosService {
     
     async updateContacto(id, fields, contact) {
       try {
-        fields.descripcion ? contact.descripcion = fields.descripcion : false;
-        fields.categoria ? contact.categoria = fields.categoria : false;
-        fields.precio_unitario ? contact.precio_unitario = fields.precio_unitario : false;
-        fields.url_img ? contact.url_img = fields.url_img : false;
+        fields.fullname ? contact.fullName = fields.fullName : false;
+        fields.email ? contact.email = fields.email : false;
+        fields.telephone ? contact.telephone = fields.telephone : false;
+        fields.message ? contact.message = fields.message : false;
   
         await ContactosModel.findOneAndUpdate({_id:id}, contact);
         return contact;
